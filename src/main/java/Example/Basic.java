@@ -6,10 +6,19 @@ import JCat.Display.Texture;
 import JCat.Event.Event;
 import JCat.Event.EventDispatcher;
 import JCat.Event.EventListener;
+import JCat.Math.Vector2;
+import JCat.Math.Shape.LineShape;
+import JCat.Math.Shape.RectShape;
 import JCat.Utils.ImageLoader;
 import JCat.Utils.ImageLoader.onAchieveListener;
 import JParticle.Emitter.Emitter;
 import JParticle.EmitterActions.Counter.Steady;
+import JParticle.ParticleActions.InitArea;
+import JParticle.ParticleActions.InitRotation;
+import JParticle.ParticleActions.InitScale;
+import JParticle.ParticleActions.InitTexture;
+import JParticle.ParticleActions.ApplySpeed;
+import JParticle.ParticleActions.DeadZone;
 import JParticle.Renderer.DisplayObjectRenderer;
 
 public class Basic {
@@ -52,24 +61,25 @@ public static void main(String[] args) {
 		
 		Emitter emitter = new Emitter(system.getStage());
 		emitter.addEmitterAction(new Steady(10));
-		
-		
-//		emitter.addInitializer( new ImageClass(ResourceManager.getInstance().getClassByName("a") ) );
-//		emitter.addInitializer( new Position( new LineZone( new Po((int) -1000, -5 ), new Po((int) 805, -5 ) ) ) );
-//		emitter.addInitializer( new Velocity( new RectangleZone( 200, 200, 520, 420 ) ) );
-//		emitter.addInitializer( new ScaleImageInit( 0.75, 2 ) );
-//
-//		
-//		emitter.addAction( new Move() );
-//		RandomDrift drift = new RandomDrift( 15, 15 );
-//		emitter.addAction( drift );
-//		RectangleZone dzone = new RectangleZone( -2000, -10, 1000, 600 );
-//		DeathZone deathZone = new DeathZone( dzone, true );
-//		emitter.addAction( deathZone );
-//	
-		
+		emitter.addParticleAction(new InitArea(new LineShape(Vector2.ZERO, new Vector2(system.getStage().getStageWidth(), 0))));
+		emitter.addParticleAction(new InitTexture("bunny"));
+		emitter.addParticleAction(new ApplySpeed(5,0));
+		emitter.addParticleAction(new InitScale(0.2,0.5));
+		emitter.addParticleAction(new DeadZone(new RectShape(system.getStage().getBound(null))));
+		emitter.addParticleAction(new InitRotation(360));
 		emitter.start();
-//		emitter.runAhead( 10 );
+		
+		emitter.x=200;
+		emitter.y=200;
+		
+		
+		DisplayObjectRenderer renderer=new DisplayObjectRenderer();
+		renderer.addEmitter(emitter);
+		
+		system.getStage().addChild(renderer);
+		
+
+
 		
 	}
 }

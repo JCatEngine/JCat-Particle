@@ -1,9 +1,9 @@
 package JParticle.Particles;
 
-import JCat.Display.Bitmap;
 import JCat.Display.DisplayObject;
+import JCat.Display.Texture;
 
-/**
+	/**
 	 * The Particle class is a set of public properties shared by all particles.
 	 * It is deliberately lightweight, with only one method. The Initializers
 	 * and Actions modify these properties directly. This means that the same
@@ -27,30 +27,14 @@ import JCat.Display.DisplayObject;
 		/**
 		 * The scale of the particle ( 1 is normal size ).
 		 */
-		public double scale = 1;
-		
-		/**
-		 * The mass of the particle ( 1 is the default ).
-		 */
-		public double mass = 1;
-
+		public double scale = 1;	
 		/**
 		 * The object used to display the image. In a 2D particle, this is usually
 		 * a DisplayObject. In a 3D particle, this may be a DisplayObject, for 
 		 * displaying on a billboard or similar, or a 3D object in the form used
 		 * by the render system.
 		 */
-		public DisplayObject image = null;
-		
-		/**
-		 * The lifetime of the particle, in seconds.
-		 */
-		public double lifetime = 0;
-		/**
-		 * The energy of the particle.
-		 */
-		public double energy = 1;
-		
+		public Texture texture = null;
 		/**
 		 * Whether the particle is dead and should be removed from the stage.
 		 */
@@ -58,8 +42,15 @@ import JCat.Display.DisplayObject;
 		/**
 		 * rotation
 		 */
-		public double rotation;
-		
+		public double rotation=0;
+		/**
+		 * alpha
+		 */
+		public double alpha=1;
+		/**
+		 * speed
+		 */
+		public double speed=0;
 		
 		
 		/**
@@ -77,10 +68,22 @@ import JCat.Display.DisplayObject;
 		public void reset()
 		{
 			scale=1;
-			mass=1;
-			image=null;
-			energy=1;
+			texture=null;
 			isDead=false;
+			speed=0;
+			alpha=1;
+			rotation=0;
+		}
+
+
+		public void update() {
+			
+			double speedX=Math.cos(rotation)*speed;
+			double speedY=Math.sin(rotation)*speed;
+			
+			x+=speedX;
+			y+=speedY;
+			
 		}
 	}
 

@@ -1,5 +1,6 @@
 package JParticle.Emitter;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 import JCat.Display.Stage;
@@ -7,7 +8,10 @@ import JCat.Event.Event;
 import JCat.Event.EventDispatcher;
 import JParticle.Base.ActionPriority;
 import JParticle.EmitterActions.EmitterAction;
+import JParticle.Events.EmitterAfterUpdateEvent;
+import JParticle.Events.EmitterBeforeUpdateEvent;
 import JParticle.Events.ParticleCreatedEvent;
+import JParticle.Events.ParticleDeadEvent;
 import JParticle.ParticleActions.ParticleAction;
 import JParticle.Particles.Particle;
 import JParticle.Particles.ParticleFactory;
@@ -42,19 +46,21 @@ import JParticle.Particles.SharedParticleFactory;
 		/**
 		 * position of the emitter
 		 */
-		protected double x;
-		protected double y;
+		public double x;
+		public double y;
 		/**
 		 * The rotation of the emitter in angle.
 		 */
 		public double rotation = 0;
 		
 		protected int state=UNSTART;
+		private Stage stage;
 		
 		
 		public Emitter(Stage stage)
 		{
 
+			this.stage = stage;
 			stage.addEventListener(Event.UPDATE, event -> loop());
 		}
 			
@@ -78,11 +84,42 @@ import JParticle.Particles.SharedParticleFactory;
 			
 			if(state==RUNNING)
 			{
+				//dispatch event
+				dispatchEvent(new EmitterBeforeUpdateEvent());
+				//set particle dead which out of stage
+				outOfStageCheck();
 				//check particle dead
 				checkParticlesDead();
-				
+				//update action
 				updateAction();
+				//update particle based on state of particle
+				updateParticle();
+				//dispatch event
+				dispatchEvent(new EmitterAfterUpdateEvent());
 				
+			}
+			
+		}
+
+
+		private void outOfStageCheck() {
+			for (Particle particle : particles) {
+				if(particle.x<-500||particle.x>stage.getStageWidth()+500)
+				{
+					particle.isDead=true;
+				}
+				else if(particle.y<-500||particle.y>stage.getStageHeight()+500)
+				{
+					particle.isDead=true;
+				}
+			}
+			
+		}
+
+
+		private void updateParticle() {
+			for (Particle particle : particles) {
+				particle.update();
 			}
 			
 		}
@@ -100,6 +137,7 @@ import JParticle.Particles.SharedParticleFactory;
 			for (Particle particle : dead) {
 				particles.remove(particle);
 				particleFactory.disposeParticle(particle);
+				dispatchEvent(new ParticleDeadEvent(particle));
 			}
 			
 			
@@ -118,7 +156,6 @@ import JParticle.Particles.SharedParticleFactory;
 		public void addParticleAction(ParticleAction action)
 		{
 			particleActions.add(action);
-			action.addedToEmitter( this );
 		}
 		
 		/**
@@ -131,7 +168,6 @@ import JParticle.Particles.SharedParticleFactory;
 		public void removeParticleAction(ParticleAction action)
 		{
 			particleActions.remove(action);
-			action.removedFromEmitter(this);
 			
 		}
 			
@@ -351,6 +387,12 @@ import JParticle.Particles.SharedParticleFactory;
 				}
 			}
 			
+		}
+
+
+		public Collection<? extends Particle> getParticles() {
+			// TODO Auto-generated method stub
+			return particles;
 		}
 		
 		

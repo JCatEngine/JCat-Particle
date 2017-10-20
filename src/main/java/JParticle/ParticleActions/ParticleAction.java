@@ -1,6 +1,7 @@
 package JParticle.ParticleActions;
 
 import JParticle.Base.Action;
+import JParticle.Base.ActionPriority;
 import JParticle.Emitter.Emitter;
 import JParticle.Particles.Particle;
 
@@ -9,7 +10,7 @@ import JParticle.Particles.Particle;
  * @author Administrator
  *
  */
-public interface ParticleAction extends Action{
+public abstract class ParticleAction implements Action{
 	
 	/**
 	 * called every frame
@@ -18,21 +19,37 @@ public interface ParticleAction extends Action{
 	 * @param time The duration of the frame - used for time based updates.
 	 * 
 	 */
-	public void update(Particle particle);
+	public abstract void update(Particle particle);
 
 	/**
 	 * called when one particle be created
 	 * @param emitter
 	 * @param particle
 	 */
-	public void start(Particle particle);
+	public abstract void start(Particle particle);
 	
 	
-//	/**
-//	 * called when one particle dead
-//	 * @param emitter
-//	 * @param particle
-//	 */
-//	public void end(Particle particle);
+	/**
+	 * most time these two action are useless,so i just null implement it 
+	 */
+	@Override
+	public void addedToEmitter(Emitter emitter) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void removedFromEmitter(Emitter emitter) {
+		// TODO Auto-generated method stub
+		
+	}
+	//default is low
+	@Override
+	public ActionPriority getPriority() {
+		// TODO Auto-generated method stub
+		return ActionPriority.LOW;
+	}
+	
+	
 
 }
