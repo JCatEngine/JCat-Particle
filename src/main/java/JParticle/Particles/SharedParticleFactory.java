@@ -1,5 +1,7 @@
 package JParticle.Particles;
 
+import java.util.LinkedList;
+
 /**
  * a factory shared by all emitter
  * @author Administrator
@@ -19,21 +21,35 @@ public class SharedParticleFactory implements ParticleFactory {
 		return instance;
 	}
 
+	private LinkedList<Particle> caches=new LinkedList<>();
+	
+	private SharedParticleFactory() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public Particle createParticle() {
-		// TODO Auto-generated method stub
-		return null;
+		if(caches.size()>0)
+		{
+			return caches.removeFirst();
+		}
+		else
+		{
+			return new Particle();
+		}
+		
 	}
 
 	@Override
 	public void disposeParticle(Particle particle) {
-		// TODO Auto-generated method stub
+		particle.reset();
+		caches.add(particle);
 
 	}
 
 	@Override
 	public void clearAllParticles() {
-		// TODO Auto-generated method stub
+		caches.clear();
 
 	}
 

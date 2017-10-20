@@ -26,12 +26,6 @@ public class Steady extends CounterAction {
 
 	}
 
-	@Override
-	public void end(Emitter emitter) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public int getAmount() {
 		return amount;
 	}

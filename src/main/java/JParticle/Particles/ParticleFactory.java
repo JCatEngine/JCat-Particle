@@ -19,8 +19,8 @@ package JParticle.Particles;
 		 * a particle from the pool and only creates a new particle if the pool is empty.
 		 * 
 		 * @return a Particle object.
-		 */ Particle createParticle();
-		
+		 */ 
+		Particle createParticle();
 		/**
 		 * Indicates a particle is no longer required. If using a pool of particles the particle factory will 
 		 * return the particle to the pool for reuse later.

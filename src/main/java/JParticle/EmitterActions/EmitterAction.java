@@ -25,12 +25,12 @@ public interface EmitterAction extends Action{
 	 */
 	public void start(Emitter emitter);
 	
-	
-	/**
-	 * called when emitter end
-	 * @param emitter
-	 * @param particle
-	 */
-	public void end(Emitter emitter);
+//	
+//	/**
+//	 * called when emitter end
+//	 * @param emitter
+//	 * @param particle
+//	 */
+//	public void end(Emitter emitter);
 
 }

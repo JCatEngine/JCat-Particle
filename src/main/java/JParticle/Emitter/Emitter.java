@@ -59,9 +59,49 @@ import JParticle.Particles.SharedParticleFactory;
 		}
 			
 		
+		/**
+		 * Used to update the emitter. If using the internal tick, this method
+		 * will be called every frame without any action by the user. If not
+		 * using the internal tick, the user should call this method on a regular
+		 * basis to update the particle system.
+		 * 
+		 * <p>The method asks the counter how many particles to create then creates 
+		 * those particles. Then it calls sortParticles, applies the activities to 
+		 * the emitter, applies the Actions to all the particles, removes all dead 
+		 * particles, and finally dispatches an emitterUpdated event which tells 
+		 * any renderers to redraw the particles.</p>
+		 * 
+		 * @param time The duration, in seconds, to be applied in the update step.
+		 * 
+		 */
 		protected void loop() {
 			
-			update();
+			if(state==RUNNING)
+			{
+				//check particle dead
+				checkParticlesDead();
+				
+				updateAction();
+				
+			}
+			
+		}
+
+
+		private void checkParticlesDead() {
+			//remove dead particle
+			LinkedList<Particle> dead=new LinkedList<>();
+			for (Particle particle : particles) {
+				if(particle.isDead==true)
+				{
+					dead.add(particle);
+				}
+			}
+			for (Particle particle : dead) {
+				particles.remove(particle);
+				particleFactory.disposeParticle(particle);
+			}
+			
 			
 		}
 
@@ -94,19 +134,6 @@ import JParticle.Particles.SharedParticleFactory;
 			action.removedFromEmitter(this);
 			
 		}
-		
-		/**
-		 * Detects if the emitter is using a particular action or not.
-		 * 
-		 * @param action The action to look for.
-		 * 
-		 * @return true if the action is being used by the emitter, false 
-		 * otherwise.
-		 */
-		public boolean hasParticleAction(ParticleAction action)
-		{
-			return particleActions.contains(action);
-		}
 			
 
 		/**
@@ -136,19 +163,6 @@ import JParticle.Particles.SharedParticleFactory;
 		}
 		
 		/**
-		 * Detects if the emitter is using a emitter action or not.
-		 * 
-		 * @param action The action to look for.
-		 * 
-		 * @return true if the action is being used by the emitter, false 
-		 * otherwise.
-		 */
-		public boolean hasEmitterAction(EmitterAction action)
-		{
-			return emitterActions.contains(action);
-		}
-		
-		/**
 		 * Emitters do their own particle initialization here - usually involves 
 		 * positioning and rotating the particle to match the position and rotation 
 		 * of the emitter. This method is called before any initializers that are
@@ -157,7 +171,7 @@ import JParticle.Particles.SharedParticleFactory;
 		 * 
 		 * <p>The implementation of this method in this base class does nothing.</p>
 		 */
-		protected void initParticle(Particle particle)
+		protected void initParticleInternal(Particle particle)
 		{
 			particle.x=x;
 			particle.y=y;
@@ -188,6 +202,9 @@ import JParticle.Particles.SharedParticleFactory;
 		
 		
 		
+		/**
+		 * called when emitter first created
+		 */
 		private void startEmitterAction() {
 			//run high
 			for (EmitterAction emitterAction : emitterActions) {
@@ -203,40 +220,14 @@ import JParticle.Particles.SharedParticleFactory;
 					emitterAction.start(this);
 				}
 			}
-			
-			
+
 		}
 
 
-		/**
-		 * Used to update the emitter. If using the internal tick, this method
-		 * will be called every frame without any action by the user. If not
-		 * using the internal tick, the user should call this method on a regular
-		 * basis to update the particle system.
-		 * 
-		 * <p>The method asks the counter how many particles to create then creates 
-		 * those particles. Then it calls sortParticles, applies the activities to 
-		 * the emitter, applies the Actions to all the particles, removes all dead 
-		 * particles, and finally dispatches an emitterUpdated event which tells 
-		 * any renderers to redraw the particles.</p>
-		 * 
-		 * @param time The duration, in seconds, to be applied in the update step.
-		 * 
-		 */
-		public void update()
-		{
-			if(state==RUNNING)
-			{
-				//check particle dead
-				
-				updateAction();
-				
-			}
-			
-		}
 		
 		
 		private void updateAction() {
+			
 			// TODO Auto-generated method stub
 			//run high
 			for (EmitterAction emitterAction : emitterActions) {
@@ -282,15 +273,14 @@ import JParticle.Particles.SharedParticleFactory;
 		{
 			if(state==RUNNING)
 			{
-				state=CLOSED;
+				state=STOPED;
 			}
 			else
 			{
 				throw new RuntimeException("can't pause emitter!");
 			}
 		}
-		
-		
+			
 		
 		/**
 		 * Stops the emitter, killing all current particles and returning them to the 
@@ -307,16 +297,32 @@ import JParticle.Particles.SharedParticleFactory;
 		 * release data
 		 */
 		private void _releaseData() {
-			// TODO Auto-generated method stub
+			//release data
+			//dispost all particle
+			LinkedList<Particle> dead=new LinkedList<>();
+			for (Particle particle : particles) {
+				
+					dead.add(particle);
+			}
+			for (Particle particle : dead) {
+				particles.remove(particle);
+				particleFactory.disposeParticle(particle);
+			}
+			
+			
+			particles=null;
 			
 		}
 
-
+		/**
+		 * create new particles
+		 * @param amount
+		 */
 		public void createPartices(int amount) {
 			for (int i = 0; i < amount; i++) {
 				Particle particle=particleFactory.createParticle();
 				particles.add(particle);
-				
+				initParticleInternal(particle);
 				//apply init event
 				startParticleAction(particle);
 				dispatchEvent(new ParticleCreatedEvent(particle));
@@ -324,7 +330,10 @@ import JParticle.Particles.SharedParticleFactory;
 			
 		}
 
-
+		/**
+		 * when a new particle be created,all start method of action will be apply to it
+		 * @param particle
+		 */
 		private void startParticleAction(Particle particle) {
 			//run high
 			for (ParticleAction particleAction : particleActions) {

@@ -28,11 +28,11 @@ public interface ParticleAction extends Action{
 	public void start(Particle particle);
 	
 	
-	/**
-	 * called when one particle dead
-	 * @param emitter
-	 * @param particle
-	 */
-	public void end(Particle particle);
+//	/**
+//	 * called when one particle dead
+//	 * @param emitter
+//	 * @param particle
+//	 */
+//	public void end(Particle particle);
 
 }
