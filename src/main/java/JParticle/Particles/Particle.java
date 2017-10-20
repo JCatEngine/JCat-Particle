@@ -16,7 +16,14 @@ import JCat.Display.DisplayObject;
 	 */
 	public class Particle
 	{
-		
+		/**
+		 * The x coordinate of the particle in pixels.
+		 */
+		public double x = 0;
+		/**
+		 * The y coordinate of the particle in pixels.
+		 */
+		public double y = 0;
 		/**
 		 * The scale of the particle ( 1 is normal size ).
 		 */
@@ -48,6 +55,10 @@ import JCat.Display.DisplayObject;
 		 * Whether the particle is dead and should be removed from the stage.
 		 */
 		public boolean isDead = false;
+		/**
+		 * rotation
+		 */
+		public double rotation;
 		
 		
 		
