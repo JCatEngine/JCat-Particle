@@ -4,9 +4,12 @@ import JCat.RenderSystem;
 import JCat.Display.Bitmap;
 import JCat.Display.Texture;
 import JCat.Event.Event;
+import JCat.Event.EventDispatcher;
 import JCat.Event.EventListener;
 import JCat.Utils.ImageLoader;
 import JCat.Utils.ImageLoader.onAchieveListener;
+import JParticle.Emitter.Emitter;
+import JParticle.Renderer.DisplayObjectRenderer;
 
 public class Basic {
 public static void main(String[] args) {
@@ -46,6 +49,30 @@ public static void main(String[] args) {
 		system.getStage().addChildAll(bitmap);
 		
 		
+		Emitter emitter = new Emitter();
+		//emitter.fixedFrameTime=1/30;
+		DisplayObjectRenderer renderer = new DisplayObjectRenderer();
+		GameEngine.getInstance().gamePlane.addChild( renderer );
+		renderer.addEmitter( emitter );
+		
+		emitter.counter = new Steady( 180 );
+		
+		emitter.addInitializer( new ImageClass(ResourceManager.getInstance().getClassByName("a") ) );
+		emitter.addInitializer( new Position( new LineZone( new Po((int) -1000, -5 ), new Po((int) 805, -5 ) ) ) );
+		emitter.addInitializer( new Velocity( new RectangleZone( 200, 200, 520, 420 ) ) );
+		emitter.addInitializer( new ScaleImageInit( 0.75, 2 ) );
+
+		
+		emitter.addAction( new Move() );
+		RandomDrift drift = new RandomDrift( 15, 15 );
+		emitter.addAction( drift );
+		RectangleZone dzone = new RectangleZone( -2000, -10, 1000, 600 );
+		DeathZone deathZone = new DeathZone( dzone, true );
+		emitter.addAction( deathZone );
+	
+		
+		emitter.start();
+		emitter.runAhead( 10 );
 		
 	}
 }
